@@ -2,13 +2,23 @@
 
 # 🚨 AI-Powered Predictive Maintenance System
 
-### 🛠 Overview
-A real-time monitoring solution designed for industrial environments to predict machine failures before they occur. The system leverages **Machine Learning (Isolation Forest)** to detect behavioral anomalies in sensor data (temperature, vibration, etc.) and visualizes health metrics through a high-performance **Streamlit dashboard**.
+### 🛠 Project Overview
+This project is a real-time monitoring solution designed for industrial environments to predict machine failures. Using **Machine Learning (Isolation Forest)**, the system analyzes live sensor telemetry to identify behavioral anomalies before they lead to costly downtime.
 
 ### 🌟 Key Features
-- **Real-time Anomaly Detection:** Uses Scikit-learn's Isolation Forest to identify hidden patterns in machine telemetry.
-- **Dynamic Dashboard:** Live data streaming with visual alerts (red flags) for any detected anomalies.
-- **Scalable Sensor Simulation:** A modular data engine that mimics real-world machine behaviors including failure scenarios.
-- **High Performance:** Optimized for low-latency processing to ensure immediate feedback on the shop floor.
+- **Real-Time Anomaly Detection:** Leverages Scikit-learn to spot outliers in temperature and vibration data.
+- **Interactive Dashboard:** Built with **Streamlit** and **Altair** for high-performance visual data streaming.
+- **Edge Simulation Engine:** A custom-built data generator that mimics real-world CNC machine behaviors and failure patterns.
+- **Modern UI/UX:** Clean, dark-mode optimized interface with instant danger alerts.
 
-To use it just open the terminal and type streamlit run app.py 
+### 🚀 Tech Stack
+- **Language:** Python 3.x
+- **AI/ML:** Scikit-learn (Isolation Forest), NumPy
+- **Dashboard:** Streamlit
+- **Visualization:** Altair (Declarative Statistical Visualization)
+- **Deployment Ready:** Clean code structure for local or cloud environments
+
+### 📊 How It Works
+1. **Model Training:** Run `monitor.py` to train the AI on "healthy" machine patterns.
+2. **Streaming:** The `sensor_sim.py` generates synthetic live data.
+3. **Monitoring:** Launch the dashboard using `streamlit run app.py` to watch the AI detect anomalies in real-time.
