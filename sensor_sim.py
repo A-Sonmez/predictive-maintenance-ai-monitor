@@ -4,14 +4,19 @@ import time
 from datetime import datetime
 
 def generate_sensor_data():
-    # Normal çalışma verileri
-    temp = np.random.normal(70, 2, 1)[0]  # 70 derece civarı
-    vibration = np.random.normal(0.5, 0.1, 1)[0] # Düşük titreşim
+    """
+    Simulates real-time industrial sensor data for machine monitoring.
+    Generates normal operating values with a 5% chance of creating anomalies.
+    """
+    # Normal operating data simulation
+    # Mean temperature ~70°C, Mean vibration ~0.5
+    temp = np.random.normal(70, 2, 1)[0]
+    vibration = np.random.normal(0.5, 0.1, 1)[0]
     
-    # %5 ihtimalle anomali (arıza) oluştur
+    # Generate anomaly (failure) with 5% probability
     if np.random.random() > 0.95:
-        temp += np.random.uniform(15, 30) # Ani ısınma
-        vibration += np.random.uniform(0.5, 1.5) # Sert sarsıntı
+        temp += np.random.uniform(15, 30)       # Sudden overheating
+        vibration += np.random.uniform(0.5, 1.5) # Severe vibration/shaking
         
     return {
         "timestamp": datetime.now().strftime("%H:%M:%S"),
@@ -20,9 +25,12 @@ def generate_sensor_data():
         "machine_id": "CNC-01"
     }
 
-# Test için:
+# For testing purposes:
 if __name__ == "__main__":
-    print("Sensör verisi akışı başlatıldı (Durdurmak için Ctrl+C)...")
-    for _ in range(10):
-        print(generate_sensor_data())
-        time.sleep(1)
+    print("🚀 Sensor data stream started (Press Ctrl+C to stop)...")
+    try:
+        for _ in range(10):
+            print(generate_sensor_data())
+            time.sleep(1)
+    except KeyboardInterrupt:
+        print("\nStream stopped by user.")

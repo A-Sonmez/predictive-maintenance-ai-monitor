@@ -1,58 +1,61 @@
 import pandas as pd
 import numpy as np
 from sklearn.ensemble import IsolationForest
-import joblib # Modeli kaydetmek için
-from sensor_sim import generate_sensor_data # Bir önceki yazdığın dosya
+import joblib # For saving and loading the model
+from sensor_sim import generate_sensor_data # Data generator module
 import time
 
-# --- 1. MODEL EĞİTİMİ (Simüle Edilmiş Normal Veri İle) ---
+# --- 1. MODEL TRAINING (With Simulated Normal Data) ---
 def train_initial_model():
-    print("🤖 Yapay zeka makinenin normal çalışma düzenini öğreniyor...")
+    """Learns the normal operating patterns of the machinery."""
+    print("🤖 AI is learning the machine's normal operating patterns...")
     
-    # Makinenin "sağlıklı" olduğu 500 adet örnek veri üretelim
+    # Generate 500 samples of "healthy" machine data
     normal_data = []
-    for _ in range(500):
+    while len(normal_data) < 500:
         d = generate_sensor_data()
-        # Eğitim sırasında anomali istemiyoruz, sadece normali öğrensin
+        # Ensure we only learn from normal ranges during training
         if d['temperature'] < 80 and d['vibration'] < 0.8:
             normal_data.append([d['temperature'], d['vibration']])
     
     X = np.array(normal_data)
     
-    # Isolation Forest: Aykırı değerleri bulmak için birebir
+    # Isolation Forest: Excellent for detecting outliers/anomalies
+    # Contamination defines the expected proportion of outliers in the data
     model = IsolationForest(contamination=0.05, random_state=42)
     model.fit(X)
     
-    # Modeli kaydedelim ki her seferinde eğitmek zorunda kalmayalım
+    # Save the model to avoid retraining on every execution
     joblib.dump(model, 'anomaly_model.pkl')
-    print("✅ Model eğitildi ve 'anomaly_model.pkl' olarak kaydedildi.")
+    print("✅ Model trained and saved as 'anomaly_model.pkl'.")
     return model
 
-# --- 2. CANLI İZLEME DÖNGÜSÜ ---
+# --- 2. LIVE MONITORING LOOP (Backend) ---
 def start_monitoring():
+    """Starts the real-time background monitoring process."""
     try:
         model = joblib.load('anomaly_model.pkl')
     except:
         model = train_initial_model()
 
-    print("\n🔍 Canlı İzleme Başlatıldı... (Anomali bekleniyor)")
-    print("-" * 50)
+    print("\n🔍 Live Monitoring Started... (Watching for anomalies)")
+    print("-" * 60)
 
     while True:
         data = generate_sensor_data()
         features = np.array([[data['temperature'], data['vibration']]])
         
-        # Tahmin yap: 1 = Normal, -1 = Anomali (Hata)
+        # Prediction logic: 1 = Normal, -1 = Anomaly (Outlier)
         prediction = model.predict(features)[0]
         
         status = "✅ NORMAL"
         if prediction == -1:
-            status = "🚨 ANOMALİ TESPİT EDİLDİ!"
-            # Burada mail atma veya log tutma kodu tetiklenebilir
+            status = "🚨 ANOMALY DETECTED!"
+            # Log triggering or alert logic can be integrated here
         
-        print(f"[{data['timestamp']}] {data['machine_id']} | Isı: {data['temperature']}°C | Titreşim: {data['vibration']} | Durum: {status}")
+        print(f"[{data['timestamp']}] {data['machine_id']} | Temp: {data['temperature']}°C | Vib: {data['vibration']} | Status: {status}")
         
-        time.sleep(1) # Gerçek zamanlı akış simülasyonu
+        time.sleep(1) # Real-time flow simulation
 
 if __name__ == "__main__":
     start_monitoring()
