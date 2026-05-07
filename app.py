@@ -13,7 +13,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# Load Model with Caching for Performance and Stability
+# Load Model with Caching for Stability
 @st.cache_resource
 def load_model():
     try:
@@ -32,10 +32,10 @@ st.title("🚨 Real-Time AI Machine Health Monitoring")
 st.markdown("---")
 
 st.sidebar.header("⚙️ Control Panel")
-# Streamflow speed optimization
+# Speed adjustment
 speed = st.sidebar.slider("Data Stream Speed (Seconds)", 0.01, 1.0, 0.1)
 
-# Initialize Session State for Data History
+# Session state for data tracking
 if 'data_history' not in st.session_state:
     st.session_state.data_history = []
 
@@ -53,9 +53,9 @@ with col2:
 st.subheader("📋 System Logs & Records")
 table_container = st.empty()
 
-# --- 4. MAIN EXECUTION LOOP ---
+# --- 4. MAIN LOOP ---
 while True:
-    # Data extraction and AI inference
+    # Get sensor data and predict
     raw_data = generate_sensor_data()
     features = np.array([[raw_data['temperature'], raw_data['vibration']]])
     
@@ -63,7 +63,7 @@ while True:
     prediction = model.predict(features)[0]
     raw_data['status'] = "Normal" if prediction == 1 else "ANOMALY"
     
-    # Update History (Keep last 50 records)
+    # Append to history and keep last 50
     st.session_state.data_history.append(raw_data)
     if len(st.session_state.data_history) > 50:
         st.session_state.data_history.pop(0)
@@ -79,11 +79,11 @@ while True:
                   delta="CRITICAL" if prediction == -1 else None, delta_color="inverse")
         
         if prediction == -1:
-            st.error(f"🚨 ANOMALY DETECTED: {raw_data['machine_id']} requires immediate inspection!")
+            st.error(f"🚨 ANOMALY DETECTED: {raw_data['machine_id']} requires inspection!")
         else:
             st.success("✅ System Status: Healthy")
 
-    # B. Update Visualization
+    # B. Update Chart (Fixed: width="stretch" used instead of use_container_width)
     with chart_container.container():
         line_chart = alt.Chart(df).mark_line(point=True).encode(
             x=alt.X('timestamp:N', title='Time Axis'),
@@ -95,10 +95,10 @@ while True:
             )
         ).properties(height=300)
         
-        st.altair_chart(line_chart, use_container_width=True)
+        # This replaces the old use_container_width=True to stop terminal warnings
+        st.altair_chart(line_chart, width="stretch")
 
-    # C. Update Data Table
-    table_container.dataframe(df.iloc[::-1], use_container_width=True, hide_index=True)
+    # C. Update Table (Fixed: width="stretch" used instead of use_container_width)
+    table_container.dataframe(df.iloc[::-1], width="stretch", hide_index=True)
 
-    # Execution delay
     time.sleep(speed)
